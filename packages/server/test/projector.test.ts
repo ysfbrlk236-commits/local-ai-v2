@@ -96,7 +96,7 @@ describe("cevirici GGUF ust verisi", () => {
     // Egitim bicimi her ornekte <bos> ile basliyor. Eklemeyi unutmak kisa
     // girdilerde ilk uretilen simgeyi dogrudan <eos> yapiyordu: "selam"
     // sorusuna 30 denemenin 30'unda bos cevap donuyordu.
-    const source = fs.readFileSync("scripts/convert/pt-gpt2-to-gguf.py", "utf8");
+    const source = fs.readFileSync("scripts/convert/pt-gpt2-to-gguf.py", "utf8").replace(/\r\n/g, "\n");
     expect(source).toContain('"tokenizer.ggml.add_bos_token", True');
     expect(source).toContain('"tokenizer.ggml.add_eos_token", False');
   });
@@ -106,7 +106,7 @@ describe("cevirici GGUF ust verisi", () => {
     // geri kalani bayt kodlamali. NORMAL yazmak llama.cpp'ye onlari bayt
     // kodlamasi sandiriyordu: kod ciktisinda her girinti yerine
     // "[UNK_BYTE_0x20    ]" basiliyordu.
-    const source = fs.readFileSync("scripts/convert/pt-gpt2-to-gguf.py", "utf8");
+    const source = fs.readFileSync("scripts/convert/pt-gpt2-to-gguf.py", "utf8").replace(/\r\n/g, "\n");
     expect(source).toContain("TOKEN_TYPE_USER_DEFINED");
     expect(source).toMatch(/else:\s*\n(\s*#.*\n)*\s*types\[token_id\] = TOKEN_TYPE_USER_DEFINED/);
   });
