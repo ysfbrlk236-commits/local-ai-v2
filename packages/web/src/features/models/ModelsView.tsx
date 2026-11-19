@@ -25,6 +25,8 @@ export function ModelsView() {
     downloads,
     busy,
     error,
+    loadingFile,
+    loadError,
     refresh,
     loadCatalog,
     refreshDownloads,
@@ -155,7 +157,11 @@ export function ModelsView() {
                     disabled={busy || !model.fits || engine?.model === model.filename}
                     onClick={() => void loadEngine(model.filename)}
                   >
-                    {engine?.model === model.filename ? t("models.active") : t("models.load")}
+                    {loadingFile === model.filename
+                      ? t("models.loading")
+                      : engine?.model === model.filename
+                        ? t("models.active")
+                        : t("models.load")}
                   </button>
                   <button
                     type="button"
@@ -165,6 +171,8 @@ export function ModelsView() {
                     {t("models.delete")}
                   </button>
                 </div>
+                {loadingFile === model.filename && <p className="hint">{t("models.loadingHint")}</p>}
+                {loadError?.filename === model.filename && <LoadErrorBox error={loadError} />}
               </li>
             ))}
           </ul>
@@ -245,9 +253,27 @@ function CatalogSection({ catalog }: { catalog: CatalogModel[] }) {
   );
 }
 
+/** Yükleme hatası: mesaj ve motorun son kayıt satırları, kartın hemen altında. */
+function LoadErrorBox({ error }: { error: { message: string; logs: string[] } }) {
+  const t = useUi((s) => s.t);
+  return (
+    <div className="load-error" role="alert">
+      <p className="model__error">
+        <strong>{t("models.loadFailed")}</strong> {error.message}
+      </p>
+      {error.logs.length > 0 && (
+        <details>
+          <summary>{t("models.engineLogs")}</summary>
+          <pre>{error.logs.join("\n")}</pre>
+        </details>
+      )}
+    </div>
+  );
+}
+
 function CatalogCard({ model }: { model: CatalogModel }) {
   const t = useUi((s) => s.t);
-  const { local, engine, downloads, busy, loadEngine, download, downloadCatalog } =
+  const { local, engine, downloads, busy, loadEngine, download, downloadCatalog, loadingFile, loadError } =
     useModels();
   const [expanded, setExpanded] = useState(false);
   const [files, setFiles] = useState<HfFile[]>([]);
@@ -340,7 +366,11 @@ function CatalogCard({ model }: { model: CatalogModel }) {
             disabled={busy || isLoaded}
             onClick={() => void loadEngine(localMatch.filename)}
           >
-            {isLoaded ? t("models.active") : t("models.load")}
+            {loadingFile === localMatch.filename
+              ? t("models.loading")
+              : isLoaded
+                ? t("models.active")
+                : t("models.load")}
           </button>
         ) : activeDownload ? (
           <span className="badge badge--accent">
@@ -367,6 +397,10 @@ function CatalogCard({ model }: { model: CatalogModel }) {
           {expanded ? t("models.hideFiles") : t("models.allFiles")}
         </button>
       </div>
+      {localMatch && loadingFile === localMatch.filename && (
+        <p className="hint">{t("models.loadingHint")}</p>
+      )}
+      {localMatch && loadError?.filename === localMatch.filename && <LoadErrorBox error={loadError} />}
 
       {expanded && (
         <div>

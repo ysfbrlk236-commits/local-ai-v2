@@ -504,6 +504,7 @@ export const api = {
       body: JSON.stringify(contextSize ? { filename, contextSize } : { filename }),
     }),
   unloadEngine: () => request<EngineInfo>("/api/engine/unload", { method: "POST" }),
+  engineLogs: () => request<{ lines: string[] }>("/api/engine/logs"),
 
   providers: () => request<ProviderInfo[]>("/api/providers"),
   providerModels: (id: string) =>

@@ -20,6 +20,10 @@ interface ModelsState {
   providerModelError: Record<string, string>;
   busy: boolean;
   error: string | null;
+  /** Şu an yüklenmekte olan model dosyası; düğmede "Yükleniyor…" gösterir. */
+  loadingFile: string | null;
+  /** Son başarısız yükleme: hangi dosya, neden ve motorun son satırları. */
+  loadError: { filename: string; message: string; logs: string[] } | null;
 
   refresh: () => Promise<void>;
   loadCatalog: (lang?: "tr" | "en") => Promise<void>;
@@ -44,6 +48,8 @@ export const useModels = create<ModelsState>((set, get) => ({
   providerModelError: {},
   busy: false,
   error: null,
+  loadingFile: null,
+  loadError: null,
 
   refresh: async () => {
     try {
@@ -99,13 +105,22 @@ export const useModels = create<ModelsState>((set, get) => ({
   },
 
   loadEngine: async (filename) => {
-    set({ busy: true, error: null });
+    set({ busy: true, error: null, loadingFile: filename, loadError: null });
     try {
       set({ engine: await api.loadEngine(filename) });
     } catch (err) {
-      set({ error: (err as Error).message });
+      const message = (err as Error).message;
+      // Hata sayfanın üstünde kalınca aşağıdaki kartta "hiçbir şey olmuyor"
+      // gibi görünüyordu; kartın altında, motorun son satırlarıyla gösterilir.
+      let logs: string[] = [];
+      try {
+        logs = (await api.engineLogs()).lines.filter((line) => line.trim()).slice(-8);
+      } catch {
+        // Kayıtlar alınamazsa yalnızca mesaj gösterilir.
+      }
+      set({ error: message, loadError: { filename, message, logs } });
     } finally {
-      set({ busy: false });
+      set({ busy: false, loadingFile: null });
       void get().refresh();
     }
   },

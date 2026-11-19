@@ -98,7 +98,11 @@
     "projectorIncluded": "Vision model: the image encoder downloads too (+{{size}}). Without both, the model cannot see images.",
     "projectorMissing": "Image encoder (mmproj) is missing. The model loads but cannot see images.",
     "visionReady": "Vision ready",
-    "projectorIncludedShort": "Vision model: the image encoder downloads too. Without both, the model cannot see images."
+    "projectorIncludedShort": "Vision model: the image encoder downloads too. Without both, the model cannot see images.",
+    "loading": "Loading…",
+    "loadingHint": "Loading the model into memory. This can take a minute or two depending on size and disk speed.",
+    "loadFailed": "Could not load the model:",
+    "engineLogs": "Engine logs"
   },
   "knowledge": {
     "collections": "Collections",
