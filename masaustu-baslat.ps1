@@ -38,14 +38,16 @@ try {
   }
 } catch {}
 
-if (-not (Test-Path (Join-Path $engines "llama"))) {
+# Klasore degil motor dosyasina bakilir: yarim kalan indirme bos klasor
+# birakabiliyordu ve motor kurulu sanilip her acilista atlaniyordu.
+if (-not (Test-Path (Join-Path $engines "llama\llama-server.exe"))) {
   Write-Host ""
   Write-Host "  Ilk acilis: sohbet motoru (llama.cpp) indiriliyor..." -ForegroundColor Cyan
   powershell -NoProfile -ExecutionPolicy Bypass -File $fetch llama
   if ($LASTEXITCODE -ne 0) { Write-Host "  Sohbet motoru indirilemedi; uygulama icinden tekrar denenebilir." -ForegroundColor Yellow }
 }
 
-if (-not (Test-Path (Join-Path $engines "whisper"))) {
+if (-not (Test-Path (Join-Path $engines "whisper\whisper-cli.exe"))) {
   Write-Host "  Ilk acilis: ses tanima motoru (whisper.cpp) indiriliyor..." -ForegroundColor Cyan
   powershell -NoProfile -ExecutionPolicy Bypass -File $fetch whisper
   if ($LASTEXITCODE -ne 0) { Write-Host "  Ses motoru indirilemedi; sesle yazma bu durumda kapali kalir." -ForegroundColor Yellow }

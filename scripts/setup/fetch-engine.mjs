@@ -118,6 +118,18 @@ async function main() {
   if (!release) fail(`[${component}] uygun varlik bulunamadi.`);
 
   const work = fs.mkdtempSync(path.join(os.tmpdir(), "studio-engine-"));
+  // Indirme yarida kalirsa bos klasor birakma: baslaticilar klasorun
+  // varligina bakip motoru kurulu sanabiliyordu.
+  const existedBefore = fs.existsSync(target);
+  process.once("exit", (code) => {
+    if (code !== 0 && !existedBefore) {
+      try {
+        if (fs.readdirSync(target).length === 0) fs.rmdirSync(target);
+      } catch {
+        // Temizlik basarisizsa bir sonraki denemede dosya kontrolu yine yakalar.
+      }
+    }
+  });
   try {
     fs.mkdirSync(target, { recursive: true });
     await installAsset(component, release.asset, work, target);
