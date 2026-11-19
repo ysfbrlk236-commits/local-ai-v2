@@ -4,6 +4,24 @@
 # Modeller / Ses sekmesinde uyari olarak gorunur.
 $ErrorActionPreference = "Continue"
 $root = $PSScriptRoot
+
+# Konsolun "Hizli Duzenleme" (secim) modunu kapat. Pencerenin icine
+# tiklaninca Windows "Sec" moduna geciyor ve ekrana yazan programi
+# durduruyor; indirme ya da sunucu takilmis gibi kaliyordu. Ayar yalnizca
+# bu konsol penceresi icin gecerli, sistem ayarina dokunulmaz.
+try {
+  Add-Type -Namespace StudioConsole -Name Native -MemberDefinition @'
+[DllImport("kernel32.dll", SetLastError = true)] public static extern System.IntPtr GetStdHandle(int handle);
+[DllImport("kernel32.dll", SetLastError = true)] public static extern bool GetConsoleMode(System.IntPtr handle, out uint mode);
+[DllImport("kernel32.dll", SetLastError = true)] public static extern bool SetConsoleMode(System.IntPtr handle, uint mode);
+'@
+  $stdin = [StudioConsole.Native]::GetStdHandle(-10)
+  $mode = 0
+  if ([StudioConsole.Native]::GetConsoleMode($stdin, [ref]$mode)) {
+    # ENABLE_QUICK_EDIT_MODE (0x40) kapat, ENABLE_EXTENDED_FLAGS (0x80) ac.
+    [void][StudioConsole.Native]::SetConsoleMode($stdin, (($mode -band (-bnot 0x40)) -bor 0x80))
+  }
+} catch {}
 Set-Location $root
 $engines = Join-Path $root "runtime\engines"
 $fetch = Join-Path $root "scripts\setup\fetch.ps1"
