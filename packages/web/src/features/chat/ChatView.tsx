@@ -1,4 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { effortById, type EffortId } from "../../lib/effort";
+import { readLocal, writeLocal } from "../../lib/storage";
+import type { ModelChoice } from "./ModelMenu";
 import { useChat } from "../../stores/chat";
 import { useKnowledge } from "../../stores/knowledge";
 import { useModels } from "../../stores/models";
@@ -16,18 +19,30 @@ import { ConversationList } from "./ConversationList";
 import { MessageList } from "./MessageList";
 import { Composer } from "./Composer";
 
+const CHOICE_KEY = "studio.chat.model";
+const EFFORT_KEY = "studio.chat.effort";
+
+function readChoice(): ModelChoice | null {
+  try {
+    const parsed = JSON.parse(readLocal(CHOICE_KEY) ?? "null") as ModelChoice | null;
+    return parsed && typeof parsed.provider === "string" && typeof parsed.model === "string" ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
 export function ChatView() {
   const t = useUi((s) => s.t);
   const {
     messages, sending, error, usage, sources, sourceError, collectionId,
     send, stop, loadConversations, setCollection,
   } = useChat();
-  const { engine, providers, providerModels, refresh, loadProviderModels } = useModels();
+  const { engine, providers, providerModels, refresh, loadProviderModels, busy } = useModels();
   const collections = useKnowledge((s) => s.overview?.collections ?? NO_COLLECTIONS);
   const refreshKnowledge = useKnowledge((s) => s.refresh);
 
-  const [provider, setProvider] = useState("llamacpp");
-  const [model, setModel] = useState("");
+  const [choice, setChoice] = useState<ModelChoice | null>(() => readChoice());
+  const [effort, setEffort] = useState<EffortId>(() => effortById(readLocal(EFFORT_KEY)).id);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -36,37 +51,45 @@ export function ChatView() {
     void refreshKnowledge();
   }, [loadConversations, refresh, refreshKnowledge]);
 
+  // Modeller sekmesinden başka bir model yüklendiyse seçici onu izlesin.
   useEffect(() => {
-    void loadProviderModels(provider);
-  }, [provider, loadProviderModels]);
-
-  // Yerel motor için model adı llama-server tarafından yoksayılır ama
-  // boş bırakılamaz; yüklü modelin adını kullanırız.
-  const options = useMemo(() => {
-    if (provider === "llamacpp") {
-      return engine?.state === "ready" ? [{ id: engine.model, label: engine.model }] : [];
+    if (engine?.state !== "ready") return;
+    if (!choice || (choice.provider === "llamacpp" && choice.model !== engine.model)) {
+      choose({ provider: "llamacpp", model: engine.model });
     }
-    return (providerModels[provider] ?? []).map((m) => ({ id: m.id, label: m.label }));
-  }, [provider, providerModels, engine]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [engine?.state, engine?.model]);
 
   useEffect(() => {
-    if (options.length > 0 && !options.some((o) => o.id === model)) {
-      setModel(options[0]!.id);
+    if (choice && choice.provider !== "llamacpp" && !providerModels[choice.provider]) {
+      void loadProviderModels(choice.provider);
     }
-    if (options.length === 0 && model) setModel("");
-  }, [options, model]);
+  }, [choice, providerModels, loadProviderModels]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages]);
 
-  const ready = Boolean(model);
-  const blockedReason =
-    provider === "llamacpp" && engine?.state !== "ready"
-      ? t("chat.loadModelFirst")
-      : options.length === 0
-        ? t("chat.noModels")
+  function choose(next: ModelChoice) {
+    setChoice(next);
+    writeLocal(CHOICE_KEY, JSON.stringify(next));
+  }
+
+  const isLocal = choice?.provider === "llamacpp";
+  const cloudReady = Boolean(
+    choice && !isLocal && providers.find((p) => p.id === choice.provider)?.hasKey,
+  );
+  const localReady = isLocal && engine?.state === "ready" && engine.model === choice?.model;
+  const ready = localReady || cloudReady;
+  const blockedReason = !choice
+    ? t("chat.pickModel")
+    : isLocal && (busy || engine?.state === "starting")
+      ? t("chat.modelLoading")
+      : isLocal && !localReady
+        ? t("chat.loadModelFirst")
         : null;
+
+  const preset = effortById(effort);
 
   return (
     <div className="chat">
@@ -74,39 +97,10 @@ export function ChatView() {
 
       <div className="chat__main">
         <header className="chat__bar">
-          <label className="field field--inline">
-            <span className="field__label">{t("chat.provider")}</span>
-            <select
-              className="input input--compact"
-              value={provider}
-              onChange={(event) => setProvider(event.target.value)}
-            >
-              {providers.map((item) => (
-                <option key={item.id} value={item.id} disabled={!item.hasKey}>
-                  {item.label}
-                  {item.hasKey ? "" : ` — ${t("chat.needsKey")}`}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="field field--inline field--grow">
-            <span className="field__label">{t("chat.model")}</span>
-            <select
-              className="input input--compact"
-              value={model}
-              onChange={(event) => setModel(event.target.value)}
-              disabled={options.length === 0}
-            >
-              {options.length === 0 && <option value="">{t("chat.noModels")}</option>}
-              {options.map((option) => (
-                <option key={option.id} value={option.id}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
-
+          <span className="chat__title">
+            {choice ? (isLocal ? t("chat.localBadge") : choice.provider) : ""}
+          </span>
+          <span className="composer__spacer" />
           {collections.length > 0 && (
             <label className="field field--inline">
               <span className="field__label">{t("chat.knowledge")}</span>
@@ -152,8 +146,25 @@ export function ChatView() {
         <Composer
           disabled={!ready}
           sending={sending}
-          canSendImages={provider !== "llamacpp" || Boolean(engine?.projector)}
-          onSend={(text, images) => void send(text, { provider, model, images })}
+          canSendImages={!isLocal || Boolean(engine?.projector)}
+          choice={choice}
+          effort={effort}
+          onChoose={choose}
+          onEffort={(next) => {
+            setEffort(next);
+            writeLocal(EFFORT_KEY, next);
+          }}
+          onSend={(text, images) =>
+            choice &&
+            void send(text, {
+              provider: choice.provider,
+              model: isLocal && engine ? engine.model : choice.model,
+              images,
+              temperature: preset.temperature,
+              maxTokens: preset.maxTokens,
+              effortPrompt: preset.prompt,
+            })
+          }
           onStop={stop}
         />
       </div>

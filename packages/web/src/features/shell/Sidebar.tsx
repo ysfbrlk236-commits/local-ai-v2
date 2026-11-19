@@ -1,14 +1,8 @@
 import { useUi } from "../../stores/ui";
 
-export type TabId =
-  | "chat"
-  | "agent"
-  | "models"
-  | "knowledge"
-  | "image"
-  | "audio"
-  | "settings"
-  | "system";
+import { type TabId } from "../../stores/nav";
+
+export type { TabId };
 
 interface NavItem {
   id: TabId | string;
@@ -23,6 +17,8 @@ const NAV: NavItem[] = [
   { id: "knowledge", labelKey: "nav.knowledge", ready: true },
   { id: "image", labelKey: "nav.image", ready: true },
   { id: "audio", labelKey: "nav.audio", ready: true },
+  { id: "terminal", labelKey: "nav.terminal", ready: true },
+  { id: "theme", labelKey: "nav.theme", ready: true },
   { id: "settings", labelKey: "nav.settings", ready: true },
   { id: "system", labelKey: "system.title", ready: true },
 ];
@@ -34,7 +30,7 @@ export function Sidebar({
   active: TabId;
   onSelect: (tab: TabId) => void;
 }) {
-  const { t, theme, setTheme, language, setLanguage } = useUi();
+  const { t, language, setLanguage } = useUi();
 
   return (
     <aside className="shell__sidebar">
@@ -60,13 +56,6 @@ export function Sidebar({
       </nav>
 
       <div className="sidebar__footer">
-        <button
-          type="button"
-          className="toggle"
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-        >
-          {t("common.theme")}: {theme === "dark" ? "Dark" : "Light"}
-        </button>
         <button
           type="button"
           className="toggle"

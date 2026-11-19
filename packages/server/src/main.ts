@@ -6,6 +6,7 @@ import { stopLlama } from "./engines/llama.js";
 import { stopSd } from "./engines/sd.js";
 import { disconnectAll } from "./agent/mcp.js";
 import { closeBrowser } from "./browser/session.js";
+import { closeAllTerminals } from "./terminal/session.js";
 
 async function start(): Promise<void> {
   ensureDataDirs();
@@ -30,6 +31,7 @@ async function start(): Promise<void> {
     console.log("\n  Kapatiliyor...");
     // Motor ve MCP süreçleri önce: aksi hâlde sahipsiz kalıp belleği
     // tutmaya devam ederler.
+    closeAllTerminals();
     await Promise.allSettled([
       stopLlama(),
       stopEmbedding(),

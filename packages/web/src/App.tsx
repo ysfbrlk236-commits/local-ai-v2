@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
+import { useNav } from "./stores/nav";
+import { StatusBar } from "./features/shell/StatusBar";
+import { TerminalView } from "./features/terminal/TerminalView";
+import { ThemeView } from "./features/theme/ThemeView";
 import type { SystemInfo, Telemetry } from "@studio/shared";
 import { ApiRequestError, api, hasToken } from "./lib/api";
 import { useUi } from "./stores/ui";
-import { Sidebar, type TabId } from "./features/shell/Sidebar";
+import { Sidebar } from "./features/shell/Sidebar";
 import { SystemPanel } from "./features/shell/SystemPanel";
 import { TelemetryPanel } from "./features/shell/TelemetryPanel";
 import { Notice } from "./features/shell/Notice";
@@ -18,7 +22,7 @@ const TELEMETRY_INTERVAL_MS = 2000;
 
 export function App() {
   const t = useUi((s) => s.t);
-  const [tab, setTab] = useState<TabId>("chat");
+  const { tab, go: setTab } = useNav();
   const [authError, setAuthError] = useState(!hasToken());
 
   if (authError) {
@@ -33,16 +37,21 @@ export function App() {
   return (
     <div className="shell">
       <Sidebar active={tab} onSelect={setTab} />
-      <main className={tab === "chat" || tab === "agent" ? "main main--flush" : "main"}>
+      <div className="shell__content">
+      <StatusBar />
+      <main className={tab === "chat" || tab === "agent" || tab === "terminal" ? "main main--flush" : "main"}>
         {tab === "chat" && <ChatView />}
         {tab === "agent" && <AgentView />}
         {tab === "models" && <ModelsView />}
         {tab === "knowledge" && <KnowledgeView />}
         {tab === "image" && <ImageView />}
         {tab === "audio" && <AudioView />}
+        {tab === "terminal" && <TerminalView />}
+        {tab === "theme" && <ThemeView />}
         {tab === "settings" && <SettingsView />}
         {tab === "system" && <SystemTab onAuthError={() => setAuthError(true)} />}
       </main>
+      </div>
     </div>
   );
 }

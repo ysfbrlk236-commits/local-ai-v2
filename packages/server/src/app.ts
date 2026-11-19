@@ -14,6 +14,7 @@ import { registerKnowledgeRoutes } from "./routes/knowledge.js";
 import { registerModelRoutes } from "./routes/models.js";
 import { registerSettingsRoutes } from "./routes/settings.js";
 import { registerSystemRoutes } from "./routes/system.js";
+import { registerTerminalRoutes } from "./routes/terminal.js";
 
 /** Asla degistirilmez. Eski projedeki S1 (0.0.0.0 bind) acikliginin karsiligi. */
 export const HOST = "127.0.0.1";
@@ -41,6 +42,7 @@ export function buildRouter(): Router {
   registerKnowledgeRoutes(router);
   registerImageRoutes(router);
   registerAudioRoutes(router);
+  registerTerminalRoutes(router);
   return router;
 }
 

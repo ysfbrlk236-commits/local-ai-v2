@@ -11,7 +11,9 @@
     "image": "Görsel",
     "audio": "Ses",
     "settings": "Ayarlar",
-    "comingSoon": "Yakında"
+    "comingSoon": "Yakında",
+    "terminal": "Terminal",
+    "theme": "Tema"
   },
   "chat": {
     "provider": "Sağlayıcı",
@@ -38,7 +40,14 @@
     "noKnowledge": "Kullanma",
     "sourcesUsed": "Kullanılan {{n}} kaynak",
     "attachImage": "Görsel ekle",
-    "removeImage": "Görseli kaldır"
+    "removeImage": "Görseli kaldır",
+    "pickModel": "Aşağıdaki model menüsünden bir model seçin.",
+    "modelLoading": "Model yükleniyor…",
+    "localBadge": "Yerel model",
+    "noVision": "Bu model görsel göremiyor",
+    "voiceStart": "Sesle yaz",
+    "voiceStop": "Kaydı bitir",
+    "voiceUnavailable": "Ses tanıma için Ses sekmesinden bir Whisper modeli indirin"
   },
   "models": {
     "engine": "Yerel motor",
@@ -358,5 +367,101 @@
     "title": "Web arama sağlayıcıları",
     "note": "Anahtar eklemezseniz DuckDuckGo sayfa kazımasına düşülür; sayfa düzeni değişirse arama kırılabilir. Brave veya Tavily anahtarı bunu ortadan kaldırır.",
     "active": "etkin"
+  },
+  "modelMenu": {
+    "pick": "Model seç",
+    "title": "Model",
+    "local": "İndirilen modeller",
+    "noLocal": "Henüz model indirilmedi",
+    "loaded": "yüklü",
+    "vision": "görsel",
+    "tight": "belleğe sığmayabilir",
+    "download": "Model indir"
+  },
+  "effort": {
+    "title": "Efor",
+    "fast": "Hızlı",
+    "fastHint": "Kısa ve çabuk cevap",
+    "balanced": "Dengeli",
+    "balancedHint": "Günlük kullanım için",
+    "deep": "Derin",
+    "deepHint": "Adım adım düşünür, uzun cevap"
+  },
+  "status": {
+    "cpu": "CPU",
+    "ram": "RAM",
+    "vram": "VRAM",
+    "model": "Yüklü model",
+    "loading": "Yükleniyor",
+    "noModel": "Model yüklü değil"
+  },
+  "terminal": {
+    "new": "Yeni",
+    "close": "Kapat",
+    "none": "Açık terminal yok.",
+    "hint": "Ctrl+C durdurur · ↑↓ geçmiş · Ctrl+L temizler"
+  },
+  "theme": {
+    "title": "Tema",
+    "lead": "Her bölgeye kendi rengini ver, arka plana kendi görselini koy.",
+    "presets": "Hazır temalar",
+    "regions": "Bölge renkleri",
+    "regionsHint": "Soldan bir bölge seç, sağdaki renk çemberinden ya da R/G/B veya hex koduyla rengini ayarla. Değişiklik anında uygulanır.",
+    "editing": "Düzenlenen",
+    "wheel": "Renk çemberi",
+    "brightness": "Parlaklık",
+    "recent": "Son renkler",
+    "group": {
+      "general": "Genel",
+      "layout": "Yerleşim",
+      "chat": "Sohbet",
+      "terminal": "Terminal"
+    },
+    "region": {
+      "accent": "Vurgu rengi (butonlar)",
+      "bg": "Ana arka plan",
+      "raised": "Kartlar ve paneller",
+      "sunken": "Gömülü alanlar",
+      "text": "Yazı",
+      "textMuted": "Soluk yazı",
+      "border": "Kenarlıklar",
+      "sidebar": "Sol menü",
+      "sidebarText": "Sol menü yazısı",
+      "sidebarActive": "Sol menü seçili öğe",
+      "topbar": "Üst durum çubuğu",
+      "conversations": "Konuşma listesi",
+      "chatBar": "Sohbet başlık çubuğu",
+      "chatArea": "Sohbet alanı",
+      "userBubble": "Senin mesajların",
+      "assistantBubble": "Asistan mesajları",
+      "composer": "Mesaj kutusu",
+      "terminalBg": "Terminal arka planı",
+      "terminalText": "Terminal yazısı",
+      "terminalPrompt": "Terminal istemi"
+    },
+    "background": "Arka plan görseli",
+    "noImage": "Görsel yok",
+    "chooseImage": "Galeriden seç",
+    "removeImage": "Kaldır",
+    "blur": "Bulanıklık",
+    "dim": "Karartma",
+    "panelOpacity": "Panel opaklığı",
+    "layout": "Yerleşim",
+    "fontSize": "Yazı boyutu",
+    "radius": "Köşe yuvarlaklığı",
+    "sidebarWidth": "Sol menü genişliği",
+    "bubbles": "Mesaj balonları",
+    "lightControls": "Açık renk kontroller (açık temalar için)",
+    "statusBar": "Üst durum çubuğu",
+    "showStatusBar": "Durum çubuğunu göster",
+    "mine": "Temalarım",
+    "namePlaceholder": "Tema adı",
+    "save": "Kaydet",
+    "apply": "Uygula",
+    "delete": "Sil",
+    "export": "Dışa aktar",
+    "import": "İçe aktar",
+    "reset": "Varsayılana dön",
+    "importError": "Bu dosya geçerli bir tema değil."
   }
 }

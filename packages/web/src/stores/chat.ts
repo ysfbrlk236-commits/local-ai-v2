@@ -37,7 +37,14 @@ interface ChatState {
   removeConversation: (id: string) => Promise<void>;
   send: (
     text: string,
-    options: { provider: string; model: string; images?: ChatImage[] },
+    options: {
+      provider: string;
+      model: string;
+      images?: ChatImage[];
+      temperature?: number;
+      maxTokens?: number;
+      effortPrompt?: string;
+    },
   ) => Promise<void>;
   stop: () => void;
 }
@@ -156,6 +163,9 @@ export const useChat = create<ChatState>((set, get) => ({
           model: options.model,
           collectionId: get().collectionId ?? undefined,
           images: options.images?.length ? options.images : undefined,
+          temperature: options.temperature,
+          maxTokens: options.maxTokens,
+          effortPrompt: options.effortPrompt,
         },
         { headers: authHeaders(), signal: activeAbort.signal },
       );

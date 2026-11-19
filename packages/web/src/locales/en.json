@@ -11,7 +11,9 @@
     "image": "Image",
     "audio": "Audio",
     "settings": "Settings",
-    "comingSoon": "Soon"
+    "comingSoon": "Soon",
+    "terminal": "Terminal",
+    "theme": "Theme"
   },
   "chat": {
     "provider": "Provider",
@@ -38,7 +40,14 @@
     "noKnowledge": "Off",
     "sourcesUsed": "{{n}} sources used",
     "attachImage": "Attach image",
-    "removeImage": "Remove image"
+    "removeImage": "Remove image",
+    "pickModel": "Pick a model from the menu below.",
+    "modelLoading": "Loading model…",
+    "localBadge": "Local model",
+    "noVision": "This model can't see images",
+    "voiceStart": "Dictate",
+    "voiceStop": "Stop recording",
+    "voiceUnavailable": "Download a Whisper model in the Audio tab to dictate"
   },
   "models": {
     "engine": "Local engine",
@@ -358,5 +367,101 @@
     "title": "Web search providers",
     "note": "Without a key we fall back to scraping DuckDuckGo, which breaks when their page changes. A Brave or Tavily key removes that fragility.",
     "active": "active"
+  },
+  "modelMenu": {
+    "pick": "Pick model",
+    "title": "Model",
+    "local": "Downloaded models",
+    "noLocal": "No models downloaded yet",
+    "loaded": "loaded",
+    "vision": "vision",
+    "tight": "may not fit in memory",
+    "download": "Download models"
+  },
+  "effort": {
+    "title": "Effort",
+    "fast": "Fast",
+    "fastHint": "Short, quick answers",
+    "balanced": "Balanced",
+    "balancedHint": "For everyday use",
+    "deep": "Deep",
+    "deepHint": "Thinks step by step, longer answers"
+  },
+  "status": {
+    "cpu": "CPU",
+    "ram": "RAM",
+    "vram": "VRAM",
+    "model": "Loaded model",
+    "loading": "Loading",
+    "noModel": "No model loaded"
+  },
+  "terminal": {
+    "new": "New",
+    "close": "Close",
+    "none": "No terminal open.",
+    "hint": "Ctrl+C stops · ↑↓ history · Ctrl+L clears"
+  },
+  "theme": {
+    "title": "Theme",
+    "lead": "Give every area its own color and put your own picture in the background.",
+    "presets": "Presets",
+    "regions": "Area colors",
+    "regionsHint": "Pick an area on the left, then set its color with the wheel, R/G/B or a hex code. Changes apply instantly.",
+    "editing": "Editing",
+    "wheel": "Color wheel",
+    "brightness": "Brightness",
+    "recent": "Recent colors",
+    "group": {
+      "general": "General",
+      "layout": "Layout",
+      "chat": "Chat",
+      "terminal": "Terminal"
+    },
+    "region": {
+      "accent": "Accent (buttons)",
+      "bg": "Main background",
+      "raised": "Cards and panels",
+      "sunken": "Inset areas",
+      "text": "Text",
+      "textMuted": "Muted text",
+      "border": "Borders",
+      "sidebar": "Sidebar",
+      "sidebarText": "Sidebar text",
+      "sidebarActive": "Sidebar selected item",
+      "topbar": "Top status bar",
+      "conversations": "Conversation list",
+      "chatBar": "Chat header bar",
+      "chatArea": "Chat area",
+      "userBubble": "Your messages",
+      "assistantBubble": "Assistant messages",
+      "composer": "Message box",
+      "terminalBg": "Terminal background",
+      "terminalText": "Terminal text",
+      "terminalPrompt": "Terminal prompt"
+    },
+    "background": "Background image",
+    "noImage": "No image",
+    "chooseImage": "Choose from gallery",
+    "removeImage": "Remove",
+    "blur": "Blur",
+    "dim": "Dim",
+    "panelOpacity": "Panel opacity",
+    "layout": "Layout",
+    "fontSize": "Font size",
+    "radius": "Corner radius",
+    "sidebarWidth": "Sidebar width",
+    "bubbles": "Message bubbles",
+    "lightControls": "Light form controls (for light themes)",
+    "statusBar": "Top status bar",
+    "showStatusBar": "Show status bar",
+    "mine": "My themes",
+    "namePlaceholder": "Theme name",
+    "save": "Save",
+    "apply": "Apply",
+    "delete": "Delete",
+    "export": "Export",
+    "import": "Import",
+    "reset": "Reset to default",
+    "importError": "This file isn't a valid theme."
   }
 }

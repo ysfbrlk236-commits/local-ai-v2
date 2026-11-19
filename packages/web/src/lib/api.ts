@@ -723,3 +723,26 @@ export async function fetchScreenshotObjectUrl(filename: string): Promise<string
   if (!response.ok) throw new Error(`Ekran görüntüsü yüklenemedi: HTTP ${response.status}`);
   return URL.createObjectURL(await response.blob());
 }
+
+// -- Terminal ---------------------------------------------------------------
+
+export interface TerminalInfo {
+  id: string;
+  shell: string;
+  cwd: string;
+  alive: boolean;
+}
+
+export const terminalApi = {
+  list: () => request<{ sessions: TerminalInfo[] }>("/api/terminal"),
+  create: (cwd?: string) =>
+    request<TerminalInfo>("/api/terminal", { method: "POST", body: JSON.stringify(cwd ? { cwd } : {}) }),
+  input: (id: string, line: string, raw = false) =>
+    request<{ ok: boolean }>(`/api/terminal/${id}/input`, {
+      method: "POST",
+      body: JSON.stringify({ line, raw }),
+    }),
+  interrupt: (id: string) =>
+    request<{ ok: boolean }>(`/api/terminal/${id}/interrupt`, { method: "POST" }),
+  close: (id: string) => request<{ ok: boolean }>(`/api/terminal/${id}`, { method: "DELETE" }),
+};

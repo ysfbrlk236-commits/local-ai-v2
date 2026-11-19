@@ -34,6 +34,8 @@ const ChatBody = z.object({
   temperature: z.number().min(0).max(2).optional(),
   maxTokens: z.number().int().min(1).max(200_000).optional(),
   systemPrompt: z.string().max(20_000).optional(),
+  /** Efor seviyesinin ek yönergesi: kullanıcının sistem yönergesinin yerine geçmez, ardına eklenir. */
+  effortPrompt: z.string().max(4_000).optional(),
   /** Secilirse cevap bu bilgi tabanindan alinan kaynaklara dayandirilir. */
   collectionId: z.string().uuid().optional(),
   /** Gorsel anlama: ham base64, veri URL'i degil. */
@@ -104,7 +106,8 @@ export function registerChatRoutes(router: Router): void {
       const history = listMessages(conversation.id).map(
         (stored): ChatMessage => ({ role: stored.role, content: stored.content }),
       );
-      const systemPrompt = body.systemPrompt ?? preferences.systemPrompt;
+      const basePrompt = body.systemPrompt ?? preferences.systemPrompt;
+      const systemPrompt = [basePrompt, body.effortPrompt].filter(Boolean).join("\n\n");
       const grounding = body.collectionId
         ? await retrieve(body.collectionId, body.message, stream)
         : null;
