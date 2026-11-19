@@ -136,7 +136,7 @@ async function main() {
 
     const companionPattern = engine.companion?.(release.asset.name);
     const companion = companionPattern
-      ? release.assets.find((asset) => asset.name.includes(companionPattern))
+      ? pickCompanion(release.assets, companionPattern, release.asset.name)
       : null;
     if (companionPattern && !companion) {
       console.warn(`  [${component}] UYARI: ${companionPattern} varligi bulunamadi; CUDA DLL'leri eksik kalabilir.`);
@@ -195,12 +195,36 @@ async function findRelease(repo, candidates) {
 
   for (const release of releases) {
     const assets = release.assets ?? [];
-    for (const pattern of candidates) {
-      const asset = assets.find((item) => item.name.includes(pattern));
-      if (asset) return { asset, assets };
-    }
+    const asset = pickAsset(assets, candidates);
+    if (asset) return { asset, assets };
   }
   return null;
+}
+
+/**
+ * Kaliplari tercih sirasiyla dener. Yalnizca calisma zamani kutuphanesi
+ * tasiyan varliklar (cudart-...) ana motor olamaz: adlarinda da
+ * "bin-win-cuda" gectigi ve listede once geldikleri icin motor yerine
+ * DLL arsivi indiriliyor, llama-server.exe hic gelmiyordu.
+ */
+export function pickAsset(assets, candidates) {
+  const engines = assets.filter((item) => !/^cudart-/i.test(item.name));
+  for (const pattern of candidates) {
+    const asset = engines.find((item) => item.name.includes(pattern));
+    if (asset) return asset;
+  }
+  return null;
+}
+
+/** Ana varlikla ayni CUDA surumundeki yardimci arsivi secer (12.4 ile 12.4). */
+export function pickCompanion(assets, pattern, mainName) {
+  const matches = assets.filter((item) => item.name.includes(pattern));
+  const version = /cuda-(\d+(?:\.\d+)?)/i.exec(mainName)?.[1];
+  if (version) {
+    const same = matches.find((item) => item.name.includes(`cuda-${version}`));
+    if (same) return same;
+  }
+  return matches[0] ?? null;
 }
 
 // -- Indirme, dogrulama, acma -------------------------------------------------
