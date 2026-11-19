@@ -331,7 +331,7 @@
       "read": "okuma",
       "write": "yazma",
       "exec": "komut",
-      "computer": "tarayıcı"
+      "computer": "bilgisayar"
     },
     "browserMissing": "Tarayıcı araçları kurulu değil. Kurmak için: {{command}}",
     "plan": {
@@ -376,7 +376,8 @@
     "loaded": "yüklü",
     "vision": "görsel",
     "tight": "belleğe sığmayabilir",
-    "download": "Model indir"
+    "download": "Model indir",
+    "free": "ücretsiz"
   },
   "effort": {
     "title": "Efor",
@@ -439,7 +440,7 @@
       "terminalText": "Terminal yazısı",
       "terminalPrompt": "Terminal istemi"
     },
-    "background": "Arka plan görseli",
+    "background": "Arka plan (görsel, GIF ya da video)",
     "noImage": "Görsel yok",
     "chooseImage": "Galeriden seç",
     "removeImage": "Kaldır",
@@ -462,6 +463,8 @@
     "export": "Dışa aktar",
     "import": "İçe aktar",
     "reset": "Varsayılana dön",
-    "importError": "Bu dosya geçerli bir tema değil."
+    "importError": "Bu dosya geçerli bir tema değil.",
+    "mediaHint": "Fotoğraf, GIF ya da kısa video (MP4, WebM) seçebilirsin. Video sessiz ve döngüde oynar.",
+    "mediaActive": "Oynatılıyor: {{name}}"
   }
 }

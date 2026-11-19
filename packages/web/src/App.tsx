@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNav } from "./stores/nav";
+import { BackgroundMedia } from "./features/shell/BackgroundMedia";
 import { StatusBar } from "./features/shell/StatusBar";
 import { TerminalView } from "./features/terminal/TerminalView";
 import { ThemeView } from "./features/theme/ThemeView";
@@ -38,6 +39,7 @@ export function App() {
     <div className="shell">
       <Sidebar active={tab} onSelect={setTab} />
       <div className="shell__content">
+      <BackgroundMedia />
       <StatusBar />
       <main className={tab === "chat" || tab === "agent" || tab === "terminal" ? "main main--flush" : "main"}>
         {tab === "chat" && <ChatView />}

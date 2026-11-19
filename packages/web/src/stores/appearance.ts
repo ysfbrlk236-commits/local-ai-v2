@@ -1,4 +1,13 @@
 import { create } from "zustand";
+import {
+  MAX_MEDIA_BYTES,
+  clearMedia,
+  loadMedia,
+  mediaKindOf,
+  saveMedia,
+  type MediaKind,
+  type StoredMedia,
+} from "../lib/media-store";
 import { readableOn, withAlpha } from "../lib/color";
 import { readLocal, writeLocal } from "../lib/storage";
 
@@ -216,22 +225,25 @@ export function cssVariables(a: Appearance, hasImage: boolean): Record<string, s
   return vars;
 }
 
-export function applyAppearance(a: Appearance, image: string | null): void {
+export function applyAppearance(a: Appearance, image: string | null, media = false): void {
   const root = globalThis.document?.documentElement;
   if (!root) return;
-  for (const [name, value] of Object.entries(cssVariables(a, Boolean(image)))) {
+  for (const [name, value] of Object.entries(cssVariables(a, Boolean(image) || media))) {
     root.style.setProperty(name, value);
   }
   root.style.fontSize = `${100 * a.fontScale}%`;
   root.dataset["theme"] = a.base;
   root.dataset["bubbles"] = a.bubbles ? "on" : "off";
-  if (image) {
+  if (image && !media) {
     root.style.setProperty("--bg-image", `url("${image}")`);
-    root.dataset["bgImage"] = "on";
   } else {
     root.style.removeProperty("--bg-image");
-    delete root.dataset["bgImage"];
   }
+  if (image || media) root.dataset["bgImage"] = "on";
+  else delete root.dataset["bgImage"];
+  // Medya ayrı bir öğede oynar; ::before görseli boş kalır.
+  if (media) root.dataset["bgMedia"] = "on";
+  else delete root.dataset["bgMedia"];
 }
 
 /**
@@ -260,9 +272,21 @@ export async function compressImage(file: File, maxSide = 1920, quality = 0.85):
   }
 }
 
+export interface BackgroundMedia {
+  kind: MediaKind;
+  /** Bellekteki Blob için nesne URL'i. */
+  url: string;
+  name: string;
+}
+
 interface AppearanceState {
   appearance: Appearance;
   image: string | null;
+  /** GIF ya da video arka plan. Varsa görselin yerine geçer. */
+  media: BackgroundMedia | null;
+  setMedia: (file: File | null) => Promise<void>;
+  /** Açılışta IndexedDB'den yükler. */
+  restoreMedia: () => Promise<void>;
   saved: SavedTheme[];
   recentColors: string[];
   update: (patch: Partial<Appearance>) => void;
@@ -287,13 +311,48 @@ export const useAppearance = create<AppearanceState>((set, get) => {
 
   const commit = (appearance: Appearance, nextImage = get().image) => {
     persist({ appearance });
-    applyAppearance(appearance, nextImage);
+    applyAppearance(appearance, nextImage, Boolean(get().media));
     set({ appearance });
+  };
+
+  const showMedia = (stored: StoredMedia | null) => {
+    const previous = get().media;
+    if (previous) URL.revokeObjectURL(previous.url);
+    const media = stored
+      ? { kind: stored.kind, url: URL.createObjectURL(stored.blob), name: stored.name }
+      : null;
+    set({ media });
+    applyAppearance(get().appearance, get().image, Boolean(media));
   };
 
   return {
     appearance: initial,
     image,
+    media: null,
+
+    setMedia: async (file) => {
+      if (!file) {
+        await clearMedia();
+        showMedia(null);
+        return;
+      }
+      const kind = mediaKindOf(file);
+      if (!kind) throw new Error("Yalnızca GIF ya da video seçilebilir.");
+      if (file.size > MAX_MEDIA_BYTES) {
+        throw new Error(`Dosya çok büyük (en fazla ${Math.round(MAX_MEDIA_BYTES / 1024 / 1024)} MB).`);
+      }
+      const stored: StoredMedia = { kind, blob: file, name: file.name };
+      await saveMedia(stored);
+      // Medya ile sabit görsel aynı anda olmaz.
+      writeLocal(IMAGE_KEY, "");
+      set({ image: null });
+      showMedia(stored);
+    },
+
+    restoreMedia: async () => {
+      const stored = await loadMedia();
+      if (stored) showMedia(stored);
+    },
     saved: parseJson<SavedTheme[]>(readLocal(SAVED_KEY)) ?? [],
     recentColors: parseJson<string[]>(readLocal(RECENT_KEY)) ?? [],
 
@@ -317,7 +376,11 @@ export const useAppearance = create<AppearanceState>((set, get) => {
       if (dataUrl) writeLocal(IMAGE_KEY, dataUrl);
       else writeLocal(IMAGE_KEY, "");
       set({ image: dataUrl });
-      applyAppearance(get().appearance, dataUrl);
+      if (dataUrl && get().media) {
+        void clearMedia();
+        showMedia(null);
+      }
+      applyAppearance(get().appearance, dataUrl, Boolean(get().media));
     },
 
     saveCurrent: (name) => {

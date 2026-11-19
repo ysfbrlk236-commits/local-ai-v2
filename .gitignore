@@ -13,3 +13,5 @@ data/
 .vscode/
 .idea/
 *.log
+dist-kurulum/
+SURUM.txt

@@ -331,7 +331,7 @@
       "read": "read",
       "write": "write",
       "exec": "command",
-      "computer": "browser"
+      "computer": "computer"
     },
     "browserMissing": "Browser tools are not installed. To install: {{command}}",
     "plan": {
@@ -376,7 +376,8 @@
     "loaded": "loaded",
     "vision": "vision",
     "tight": "may not fit in memory",
-    "download": "Download models"
+    "download": "Download models",
+    "free": "free"
   },
   "effort": {
     "title": "Effort",
@@ -439,7 +440,7 @@
       "terminalText": "Terminal text",
       "terminalPrompt": "Terminal prompt"
     },
-    "background": "Background image",
+    "background": "Background (image, GIF or video)",
     "noImage": "No image",
     "chooseImage": "Choose from gallery",
     "removeImage": "Remove",
@@ -462,6 +463,8 @@
     "export": "Export",
     "import": "Import",
     "reset": "Reset to default",
-    "importError": "This file isn't a valid theme."
+    "importError": "This file isn't a valid theme.",
+    "mediaHint": "Pick a photo, GIF or short video (MP4, WebM). Video plays muted on a loop.",
+    "mediaActive": "Playing: {{name}}"
   }
 }

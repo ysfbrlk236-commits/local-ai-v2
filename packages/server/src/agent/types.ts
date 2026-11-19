@@ -21,6 +21,12 @@ export interface ToolResult {
   /** Arayüzde göstermek için yapılandırılmış ayrıntı. */
   detail?: unknown;
   isError?: boolean;
+  /**
+   * Modele gösterilecek görseller (ekran görüntüsü). Araç mesajları çoğu
+   * sağlayıcıda görsel taşıyamaz; döngü bunları ayrı bir kullanıcı mesajı
+   * olarak ekler. Konuşmaya kalıcı yazılmaz.
+   */
+  images?: Array<{ base64: string; mimeType: string }>;
 }
 
 export interface ApprovalRequest {

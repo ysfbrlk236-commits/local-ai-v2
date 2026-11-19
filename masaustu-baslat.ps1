@@ -8,6 +8,36 @@ Set-Location $root
 $engines = Join-Path $root "runtime\engines"
 $fetch = Join-Path $root "scripts\setup\fetch.ps1"
 
+# Kisayol simgesini guncel tut. Windows simgeyi dosya yoluna gore onbellege
+# aldigi icin yeni simge yeni bir adla gelir ve kisayol ona yonlendirilir.
+# Hata olursa sessizce gecilir; uygulamanin acilmasini engellememeli.
+try {
+  $homeDir = $env:HOME_DIR
+  if (-not $homeDir) { $homeDir = Split-Path $root -Parent }
+  $ico = Join-Path $homeDir "simge-yildiz.ico"
+  if (Test-Path $ico) {
+    $shell = New-Object -ComObject WScript.Shell
+    $desk = Split-Path $homeDir -Parent
+    $links = @(
+      (Join-Path ([Environment]::GetFolderPath("Desktop")) "Local AI Studio.lnk"),
+      (Join-Path $desk "Local AI Studio.lnk"),
+      (Join-Path ([Environment]::GetFolderPath("Programs")) "Local AI Studio.lnk")
+    )
+    $changed = $false
+    foreach ($link in $links) {
+      if (Test-Path $link) {
+        $shortcut = $shell.CreateShortcut($link)
+        if ($shortcut.IconLocation -ne "$ico,0") {
+          $shortcut.IconLocation = "$ico,0"
+          $shortcut.Save()
+          $changed = $true
+        }
+      }
+    }
+    if ($changed) { Start-Process ie4uinit.exe -ArgumentList "-show" -WindowStyle Hidden }
+  }
+} catch {}
+
 if (-not (Test-Path (Join-Path $engines "llama"))) {
   Write-Host ""
   Write-Host "  Ilk acilis: sohbet motoru (llama.cpp) indiriliyor..." -ForegroundColor Cyan

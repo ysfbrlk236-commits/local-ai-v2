@@ -10,6 +10,11 @@ export interface ModelChoice {
   model: string;
 }
 
+/** Ücretsiz modeller üstte; aralarındaki sıra API'nin verdiği gibi kalır. */
+function sortFreeFirst<T extends { free?: boolean }>(models: T[]): T[] {
+  return [...models].sort((a, b) => Number(Boolean(b.free)) - Number(Boolean(a.free)));
+}
+
 function shortName(filename: string): string {
   return filename.replace(/\.gguf$/i, "").replace(/[-_.]Q\d.*$/i, "");
 }
@@ -104,7 +109,7 @@ export function ModelMenu({
             <li key={provider.id} className="menu__group">
               <p className="menu__heading">{provider.label}</p>
               <ul>
-                {(providerModels[provider.id] ?? []).slice(0, 12).map((m) => (
+                {sortFreeFirst(providerModels[provider.id] ?? []).slice(0, 12).map((m) => (
                   <li key={m.id}>
                     <button
                       type="button"
@@ -115,7 +120,10 @@ export function ModelMenu({
                         close();
                       }}
                     >
-                      <span className="menu__item-main">{m.label}</span>
+                      <span className="menu__item-main">
+                        {m.label}
+                        {m.free && <span className="badge badge--free">{t("modelMenu.free")}</span>}
+                      </span>
                     </button>
                   </li>
                 ))}

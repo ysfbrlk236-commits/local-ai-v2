@@ -1,0 +1,25 @@
+Local AI Studio
+===============
+
+Kurulum: Paketi bir klasore cikartin, "Kurulum.bat" dosyasina cift tiklayin.
+Uygulama %LOCALAPPDATA%\Programs\Local AI Studio klasorune kurulur;
+masaustune ve Baslat menusune "Local AI Studio" kisayolu gelir.
+Yonetici izni gerekmez. Yeni surumu kurmak icin ayni adimi tekrarlayin;
+modeller ve sohbetler korunur.
+
+Calistirmak: Masaustundeki "Local AI Studio" simgesine cift tiklayin.
+Uygulama kendi penceresinde (Edge ya da Chrome uygulama penceresi) acilir.
+
+Ilk acilis birkac dakika surebilir (Node.js ve motorlar indirilir).
+Gorev cubugunda kucultulmus siyah bir pencere durur: sunucu odur.
+Kapatmak: o siyah pencereyi kapatin. Simgeye tekrar tiklamak ikinci bir
+kopya acmaz, calisan uygulamanin penceresini yeniden acar.
+
+Modeller ve sohbetler kurulum klasorundeki "uygulama\data" altinda durur.
+
+Ajan sekmesi bilgisayari kullanabilir (ekran goruntusu, fare, klavye,
+pencereler, tarayici). Her eylem once onay ister. Ekrani gorebilmesi icin
+gorsel destekli bir model secin.
+
+Kaldirmak: Ayarlar > Uygulamalar > Yuklu uygulamalar > Local AI Studio >
+Kaldir. Modellerin ve sohbetlerin silinip silinmeyecegi ayrica sorulur.

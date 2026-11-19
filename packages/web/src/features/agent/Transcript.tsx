@@ -66,7 +66,9 @@ function ToolEntry({ entry }: { entry: TranscriptEntry }) {
         {entry.ms !== undefined && <span className="tool__ms">{entry.ms} ms</span>}
       </button>
 
-      {entry.toolName === "browser_screenshot" && <Screenshot detail={entry.toolResult?.detail} />}
+      {(entry.toolName === "browser_screenshot" || entry.toolName === "desktop_screenshot") && (
+        <Screenshot detail={entry.toolResult?.detail} />
+      )}
 
       {open && (
         <div className="tool__detail">
@@ -116,8 +118,12 @@ function Screenshot({ detail }: { detail: unknown }) {
 function summarize(entry: TranscriptEntry): string {
   const args = entry.toolArgs as Record<string, unknown> | undefined;
   if (!args) return "";
+  if (typeof args["x"] === "number" && typeof args["y"] === "number") {
+    return `(${String(args["x"])}, ${String(args["y"])})`;
+  }
   const first =
-    args["path"] ?? args["query"] ?? args["url"] ?? args["command"] ?? args["text"];
+    args["path"] ?? args["query"] ?? args["url"] ?? args["command"] ?? args["text"] ??
+    args["keys"] ?? args["target"] ?? args["direction"] ?? args["pid"];
   return first === undefined ? "" : String(first).slice(0, 80);
 }
 

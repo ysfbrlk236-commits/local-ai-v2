@@ -1,5 +1,43 @@
 # Local AI Studio
 
+> Bu repo, [0x61A/local-ai-studio](https://github.com/0x61A/local-ai-studio)
+> projesinin kişiselleştirilmiş bir sürümüdür. Temel uygulama 0x61A'nındır
+> (MIT lisansı); aşağıdaki eklemeler bu sürüme aittir.
+
+### Bu sürümde eklenenler
+
+- **Terminal sekmesi** — uygulamanın içinde, birden fazla sekmeli kabuk
+  (Windows'ta PowerShell, diğerlerinde bash). Native modül olmadan, boru tabanlı.
+- **Tema sekmesi** — 20 bölgeye ayrı renk, renk çemberi, RGB ve hex girişi,
+  hazır temalar, kaydedilebilir temalar. Arka plana **fotoğraf, GIF ya da kısa
+  video** koyulabilir; bulanıklık, karartma ve panel saydamlığı ayarlanır.
+- **Yeni mesaj kutusu** — görsel ekleme, sesle yazma, model seçimi ve çaba
+  seviyesi (hızlı / dengeli / derin) mesaj kutusunun altında.
+- **Üst durum çubuğu** — canlı CPU, RAM, VRAM ve yüklü model; tema sekmesinden
+  açılıp kapanır.
+- **Bilgisayarı kullanan ajan (Windows)** — ekran görüntüsü alır ve görür,
+  tıklar, yazar, kısayol kullanır, pencereler ve sekmeler arasında geçer,
+  tarayıcıda adres ya da program açar. Her eylem önce onay ister.
+- **Güncel model kataloğu** — Qwen 3.6, Gemma 4 ve Ministral 3 eklendi, eski
+  nesil modeller ayıklandı. OpenRouter'ın ücretsiz modelleri listede öne çıkar.
+- **Windows kurulumu** — tek tıkla kurulum, masaüstünde ve Başlat menüsünde
+  simgeli kısayol, kendi penceresinde açılış, "Yüklü uygulamalar"dan kaldırma.
+
+### Windows'a kurulum
+
+1. [Releases](https://github.com/ysfbrlk236-commits/local-ai-v2/releases/latest) sayfasından `Local-AI-Studio-Kurulum.zip` dosyasını indirin.
+2. Zip'i bir klasöre çıkarın (sağ tık > Tümünü ayıkla).
+3. `Kurulum.bat` dosyasına çift tıklayın. Yönetici izni gerekmez.
+
+Uygulama `%LOCALAPPDATA%\Programs\Local AI Studio` klasörüne kurulur, masaüstüne
+"Local AI Studio" kısayolu gelir. İlk açılış birkaç dakika sürer.
+Kurulum paketini kaynak koddan üretmek için: `npm run build && scripts/desktop/paketle.sh`
+
+---
+
+## Orijinal proje
+
+
 **Sıfır kurulum gerektiren, tamamen yerel çalışan yapay zekâ çalışma alanı.**
 Sohbet, araç çağıran ajan, bilgi tabanı, görsel üretimi, ses ve tarayıcı
 otomasyonu — hepsi kendi makinenizde, tek bir çalışma zamanıyla.

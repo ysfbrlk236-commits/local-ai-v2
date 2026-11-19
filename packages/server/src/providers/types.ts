@@ -93,6 +93,8 @@ export interface ProviderModel {
   label: string;
   /** Bilinmiyorsa 0. */
   contextLength: number;
+  /** Sağlayıcı fiyat bildiriyorsa: girdi ve çıktı ücretsizse true. */
+  free?: boolean;
 }
 
 export interface ChatProvider {

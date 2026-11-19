@@ -85,3 +85,14 @@ describe("efor", () => {
     expect(effortById("deep").maxTokens).toBeGreaterThan(effortById("fast").maxTokens);
   });
 });
+
+describe("arka plan medyası", () => {
+  it("GIF ve videoyu tanır, sabit görseli tanımaz", async () => {
+    const { mediaKindOf } = await import("../src/lib/media-store");
+    expect(mediaKindOf({ type: "image/gif", name: "a.gif" })).toBe("gif");
+    expect(mediaKindOf({ type: "video/mp4", name: "a.mp4" })).toBe("video");
+    expect(mediaKindOf({ type: "", name: "klip.webm" })).toBe("video");
+    expect(mediaKindOf({ type: "image/jpeg", name: "a.jpg" })).toBeNull();
+  });
+
+});

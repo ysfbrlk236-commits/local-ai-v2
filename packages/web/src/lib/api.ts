@@ -118,6 +118,7 @@ export interface ProviderModel {
   id: string;
   label: string;
   contextLength: number;
+  free?: boolean;
 }
 
 export interface DownloadTask {

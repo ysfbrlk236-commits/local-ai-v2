@@ -41,6 +41,24 @@ html[data-bg-image="on"] body::before {
   transform: scale(1.04);
 }
 html[data-bg-image="on"] body::after { background: rgb(0 0 0 / var(--bg-dim, 0.35)); }
+html[data-bg-media="on"] body::before { background: none; }
+
+/* GIF / video arka plan: body::before ile body::after arasında durur. */
+.bg-media {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.bg-media video,
+.bg-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(var(--bg-blur, 0));
+  transform: scale(1.04);
+}
 html[data-bg-image="on"] .shell,
 html[data-bg-image="on"] #root { background: transparent; }
 
@@ -507,6 +525,10 @@ html[data-bg-image="on"] .popover__panel { backdrop-filter: blur(16px); }
   font-size: var(--text-xs);
 }
 .bg-editor__controls { display: grid; gap: var(--space-4); }
+.bg-editor__preview { position: relative; overflow: hidden; }
+.bg-editor__preview video,
+.bg-editor__preview img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.bg-editor .hint { margin: 0; color: var(--text-faint); font-size: var(--text-xs); line-height: 1.4; }
 
 .slider { display: grid; gap: 0.35rem; font-size: var(--text-sm); }
 .slider__head { display: flex; justify-content: space-between; }
@@ -523,3 +545,13 @@ html[data-bg-image="on"] .composer__box,
 html[data-bg-image="on"] .status,
 html[data-bg-image="on"] .chat__bar { backdrop-filter: blur(10px); }
 html[data-bg-image="on"] .card { background: var(--bg-raised); }
+
+.badge {
+  margin-left: 0.4rem;
+  padding: 0 0.4rem;
+  border-radius: 99px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  vertical-align: middle;
+}
+.badge--free { background: color-mix(in srgb, #3fb950 22%, transparent); color: #3fb950; }

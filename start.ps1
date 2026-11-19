@@ -36,6 +36,48 @@ if (-not (Test-Path $serverJs) -or -not (Test-Path $webIndex)) {
 
 $env:STUDIO_ROOT = $root
 
+# Arayuzu acar. STUDIO_APP_WINDOW=1 ise (masaustu kisayolu) Edge ya da
+# Chrome'un uygulama penceresinde, adres cubugu ve sekmeler olmadan acar;
+# ikisi de yoksa varsayilan tarayicida.
+function Open-Studio([string]$url) {
+  if ($env:STUDIO_APP_WINDOW -eq "1") {
+    $candidates = @(
+      (Join-Path ${env:ProgramFiles(x86)} "Microsoft\Edge\Application\msedge.exe"),
+      (Join-Path $env:ProgramFiles "Microsoft\Edge\Application\msedge.exe"),
+      (Join-Path $env:ProgramFiles "Google\Chrome\Application\chrome.exe"),
+      (Join-Path ${env:ProgramFiles(x86)} "Google\Chrome\Application\chrome.exe"),
+      (Join-Path $env:LOCALAPPDATA "Google\Chrome\Application\chrome.exe")
+    )
+    foreach ($exe in $candidates) {
+      if ($exe -and (Test-Path $exe)) {
+        Start-Process $exe -ArgumentList "--app=`"$url`"" | Out-Null
+        return
+      }
+    }
+  }
+  Start-Process $url | Out-Null
+}
+
+# Zaten calisiyorsa ikinci sunucu acma: yeni surec acilista eski motorlari
+# "sahipsiz" sayip kapatirdi. Onceki adres dinleniyorsa sadece pencereyi ac.
+$urlFile = Join-Path $root "data\studio-url.txt"
+if (Test-Path $urlFile) {
+  $previous = (Get-Content $urlFile -Raw).Trim()
+  if ($previous -match '^http://([^:/]+):(\d+)/') {
+    $client = New-Object System.Net.Sockets.TcpClient
+    try {
+      if ($client.ConnectAsync($Matches[1], [int]$Matches[2]).Wait(800)) {
+        Write-Host "  Local AI Studio zaten calisiyor, pencere aciliyor."
+        Open-Studio $previous
+        exit 0
+      }
+    } catch {
+    } finally {
+      $client.Dispose()
+    }
+  }
+}
+
 # 3) Sunucuyu baslat, STUDIO_URL satirini yakalayip tarayiciyi ac.
 #    Surec bu konsolun cocugu: Ctrl+C ikisini birden kapatir, baska surec
 #    oldurmeyiz.
@@ -44,10 +86,13 @@ $opened = $false
   $line = [string]$_
   if (-not $opened -and $line -match '^STUDIO_URL=(.+)$') {
     $opened = $true
-    Start-Process $Matches[1] | Out-Null
+    $url = $Matches[1]
+    try { Set-Content -Path $urlFile -Value $url -Encoding ASCII } catch {}
+    Open-Studio $url
   } else {
     Write-Host $line
   }
 }
 
+Remove-Item $urlFile -ErrorAction SilentlyContinue
 exit $LASTEXITCODE

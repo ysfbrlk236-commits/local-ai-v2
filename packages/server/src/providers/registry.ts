@@ -301,15 +301,28 @@ async function fetchOpenAiModels(
   });
   if (!response.ok) throw await describeHttpFailure(response);
   const payload = (await response.json()) as {
-    data?: Array<{ id?: string; name?: string; context_length?: number }>;
+    data?: Array<{
+      id?: string;
+      name?: string;
+      context_length?: number;
+      pricing?: { prompt?: string; completion?: string };
+    }>;
   };
   return (payload.data ?? [])
     .filter((model) => model.id)
-    .map((model) => ({
-      id: model.id as string,
-      label: model.name ?? (model.id as string),
-      contextLength: model.context_length ?? 0,
-    }));
+    .map((model) => {
+      const pricing = model.pricing;
+      const item: ProviderModel = {
+        id: model.id as string,
+        label: model.name ?? (model.id as string),
+        contextLength: model.context_length ?? 0,
+      };
+      // OpenRouter fiyatları metin olarak verir; "0" ücretsiz demek.
+      if (pricing?.prompt !== undefined && pricing?.completion !== undefined) {
+        item.free = Number(pricing.prompt) === 0 && Number(pricing.completion) === 0;
+      }
+      return item;
+    });
 }
 
 export async function fetchEmbeddings(

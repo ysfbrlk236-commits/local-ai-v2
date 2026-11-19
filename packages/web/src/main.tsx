@@ -8,8 +8,9 @@ import "./styles/personal.css";
 
 // Ilk boyamadan once tema ve dili koke uygula: yanip sonmeyi onler.
 const { language } = useUi.getState();
-const { appearance, image } = useAppearance.getState();
+const { appearance, image, restoreMedia } = useAppearance.getState();
 applyAppearance(appearance, image);
+void restoreMedia();
 document.documentElement.lang = language;
 
 const container = document.getElementById("root");

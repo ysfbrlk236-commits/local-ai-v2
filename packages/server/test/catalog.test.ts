@@ -56,20 +56,20 @@ describe("LLM Model Kataloğu", () => {
   it("bütçeye göre uyumluluk durumunu doğru hesaplar", () => {
     const tight = getCatalog("tr", 4096);
     expect(tight.find((m) => m.id === "llama-3.2-1b-instruct")?.fits).toBe(true);
-    expect(tight.find((m) => m.id === "qwen2.5-32b-instruct")?.fits).toBe(false);
+    expect(tight.find((m) => m.id === "qwen3.6-27b-instruct")?.fits).toBe(false);
     expect(getCatalog("en", 4096).find((m) => m.id === "llama-3.2-1b-instruct")?.fitsReason)
       .toContain("Runs smoothly");
   });
 
   it("görsel modelin bellek tahmini projektörü de sayar", () => {
-    const item = CATALOG_MODELS.find((m) => m.id === "minicpm-v-2_6")!;
-    const shown = getCatalog("tr").find((m) => m.id === "minicpm-v-2_6")!;
+    const item = CATALOG_MODELS.find((m) => m.id === "qwen2-vl-7b-instruct")!;
+    const shown = getCatalog("tr").find((m) => m.id === "qwen2-vl-7b-instruct")!;
     const modelOnlyMb = Math.round((item.approxSizeBytes / (1024 * 1024)) * 1.2);
     expect(shown.estimatedMb).toBeGreaterThan(modelOnlyMb);
   });
 
   it("findCatalogModel bilinmeyen kimlikte null döner", () => {
     expect(findCatalogModel("yok-boyle-bir-sey")).toBeNull();
-    expect(findCatalogModel("minicpm-v-2_6")?.repo).toBeTruthy();
+    expect(findCatalogModel("qwen2-vl-7b-instruct")?.repo).toBeTruthy();
   });
 });

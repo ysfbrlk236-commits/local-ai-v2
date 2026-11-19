@@ -7,6 +7,7 @@ import {
   type RegionKey,
   type StatusBarItems,
 } from "../../stores/appearance";
+import { mediaKindOf } from "../../lib/media-store";
 import { useUi } from "../../stores/ui";
 import { ColorPicker } from "./ColorPicker";
 
@@ -15,8 +16,8 @@ const GROUPS = ["general", "layout", "chat", "terminal"] as const;
 export function ThemeView() {
   const t = useUi((s) => s.t);
   const {
-    appearance, image, saved, recentColors,
-    update, setColor, applyPreset, setImage, saveCurrent, loadSaved, deleteSaved,
+    appearance, image, media, saved, recentColors,
+    update, setColor, applyPreset, setImage, setMedia, saveCurrent, loadSaved, deleteSaved,
     exportJson, importJson, reset,
   } = useAppearance();
   const [selected, setSelected] = useState<RegionKey>("accent");
@@ -30,7 +31,9 @@ export function ThemeView() {
     if (!file) return;
     setImageError(null);
     try {
-      setImage(await compressImage(file));
+      // GIF ve video olduğu gibi saklanır; sıkıştırma animasyonu öldürürdü.
+      if (mediaKindOf(file)) await setMedia(file);
+      else setImage(await compressImage(file));
     } catch (err) {
       setImageError((err as Error).message);
     }
@@ -126,15 +129,17 @@ export function ThemeView() {
         <div className="bg-editor">
           <div
             className="bg-editor__preview"
-            style={image ? { backgroundImage: `url("${image}")` } : undefined}
+            style={image && !media ? { backgroundImage: `url("${image}")` } : undefined}
           >
-            {!image && <span>{t("theme.noImage")}</span>}
+            {media?.kind === "video" && <video src={media.url} autoPlay muted loop playsInline />}
+            {media?.kind === "gif" && <img src={media.url} alt="" />}
+            {!image && !media && <span>{t("theme.noImage")}</span>}
           </div>
           <div className="bg-editor__controls">
             <input
               ref={imageInput}
               type="file"
-              accept="image/*"
+              accept="image/*,video/*"
               hidden
               onChange={(event) => {
                 void pickImage(event.target.files?.[0]);
@@ -145,12 +150,22 @@ export function ThemeView() {
               <button type="button" className="button" onClick={() => imageInput.current?.click()}>
                 {t("theme.chooseImage")}
               </button>
-              {image && (
-                <button type="button" className="button button--ghost" onClick={() => setImage(null)}>
+              {(image || media) && (
+                <button
+                  type="button"
+                  className="button button--ghost"
+                  onClick={() => {
+                    setImage(null);
+                    void setMedia(null);
+                  }}
+                >
                   {t("theme.removeImage")}
                 </button>
               )}
             </div>
+            <p className="hint">
+              {media ? t("theme.mediaActive", { name: media.name }) : t("theme.mediaHint")}
+            </p>
             {imageError && <p className="model__error">{imageError}</p>}
             <Slider label={t("theme.blur")} min={0} max={30} value={appearance.bgBlur} suffix="px"
               onChange={(v) => update({ bgBlur: v })} />
